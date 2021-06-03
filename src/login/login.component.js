@@ -1,17 +1,36 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
+import axios from "axios";
 
 function Login() {
   const history = useHistory();
   const [email, setEmail] = useState("");
 
-  function handleLogin() {
+  async function handleLogin() {
     if (!email) {
-      alert("Please type your e-mail");
+      alert("please type your e-mail");
       return;
     }
 
-    history.push("/dashboard");
+    try {
+      const response = await axios.get(
+        "https://dummyapi.io/data/api/user?limit=10",
+        {
+          headers: {
+            "app-id": process.env.REACT_APP_DUMMY_API_KEY,
+          },
+        }
+      );
+
+      if (response.data.data.some((user) => user.email === email)) {
+        alert("welcome!");
+        history.push("/dashboard");
+      } else {
+        alert("invalid e-mail!");
+      }
+    } catch (error) {
+      alert("there was an error!");
+    }
   }
 
   return (
